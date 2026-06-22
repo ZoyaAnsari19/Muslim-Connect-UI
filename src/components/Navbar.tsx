@@ -285,12 +285,24 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           ) : (
-            <Link
-              href="/onboarding"
-              className="hidden min-h-[44px] items-center rounded-full bg-primary px-6 text-sm font-medium text-white shadow-card transition-all hover:bg-primary-hover hover:shadow-card-hover lg:inline-flex"
-            >
-              Login / Get Started
-            </Link>
+            <>
+              <Link
+                href="/login"
+                className={`hidden min-h-[44px] items-center rounded-full border px-6 text-sm font-medium transition-all lg:inline-flex ${
+                  solid
+                    ? 'border-card-border text-heading hover:border-primary hover:text-primary'
+                    : 'border-white/40 text-white hover:bg-white/10'
+                }`}
+              >
+                Login
+              </Link>
+              <Link
+                href="/onboarding"
+                className="hidden min-h-[44px] items-center rounded-full bg-primary px-6 text-sm font-medium text-white shadow-card transition-all hover:bg-primary-hover hover:shadow-card-hover lg:inline-flex"
+              >
+                Get Started
+              </Link>
+            </>
           )}
 
           {/* Hamburger */}
@@ -396,12 +408,20 @@ export default function Navbar() {
                       </button>
                     </div>
                   ) : (
-                    <Link
-                      href="/onboarding"
-                      className="flex min-h-[48px] items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-medium text-white"
-                    >
-                      Login / Get Started
-                    </Link>
+                    <div className="flex flex-col gap-2">
+                      <Link
+                        href="/login"
+                        className="flex min-h-[48px] items-center justify-center rounded-full border border-card-border px-4 py-3 text-sm font-medium text-heading transition-colors hover:bg-primary-50 hover:text-primary"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/onboarding"
+                        className="flex min-h-[48px] items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-medium text-white"
+                      >
+                        Get Started
+                      </Link>
+                    </div>
                   )}
                 </motion.li>
               </motion.ul>

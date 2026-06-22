@@ -36,6 +36,12 @@ export default function StepSocial({ data, update, onNext, onBack }: StepSocialP
     if (validate()) onNext();
   };
 
+  const skip = () => {
+    setErrors({});
+    update({ instagram: '', facebook: '', website: '' });
+    onNext();
+  };
+
   return (
     <div>
       <div className="mb-7 text-center">
@@ -94,6 +100,15 @@ export default function StepSocial({ data, update, onNext, onBack }: StepSocialP
         <Button onClick={submit} className="flex-[2]" size="lg">
           Continue
         </Button>
+      </div>
+
+      <div className="mt-4 text-center">
+        <button
+          onClick={skip}
+          className="text-sm font-medium text-body transition-colors hover:text-primary hover:underline"
+        >
+          Skip for now
+        </button>
       </div>
     </div>
   );
