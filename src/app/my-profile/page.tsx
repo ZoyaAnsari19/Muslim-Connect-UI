@@ -158,31 +158,30 @@ function MyProfileContent() {
       >
         <div className="pattern-overlay-light relative h-28 bg-emerald-gradient sm:h-32" aria-hidden />
         <div className="px-5 pb-6 sm:px-8">
-          <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-end gap-4">
-              <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-gold-gradient font-heading text-4xl font-bold text-dark-emerald shadow-card">
-                {user.fullName.charAt(0).toUpperCase()}
-              </span>
-              <div className="pb-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-heading text-xl font-bold text-heading sm:text-2xl">
-                    {user.fullName}
-                  </h2>
-                  <Badge variant="gold">
-                    <BadgeCheck className="h-3 w-3" aria-hidden />
-                    Verified User
-                  </Badge>
-                </div>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-body">
-                  <MapPin className="h-4 w-4 text-gold-dark" aria-hidden />
-                  {user.area}, {user.city}, {user.state} — {user.pincode}
-                </p>
-              </div>
-            </div>
-            <Button size="sm" variant="secondary" onClick={() => setEditOpen(true)}>
+          <div className="flex items-start justify-between gap-4">
+            <span className="-mt-12 relative z-10 flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-gold-gradient font-heading text-4xl font-bold text-dark-emerald shadow-card">
+              {user.fullName.charAt(0).toUpperCase()}
+            </span>
+            <Button size="sm" variant="secondary" className="mt-4" onClick={() => setEditOpen(true)}>
               <Pencil className="h-4 w-4" aria-hidden />
               Edit Profile
             </Button>
+          </div>
+
+          <div className="mt-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="font-heading text-xl font-bold text-heading sm:text-2xl">
+                {user.fullName}
+              </h2>
+              <Badge variant="gold">
+                <BadgeCheck className="h-3 w-3" aria-hidden />
+                Verified User
+              </Badge>
+            </div>
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-body">
+              <MapPin className="h-4 w-4 text-gold-dark" aria-hidden />
+              {user.area}, {user.city}, {user.state} — {user.pincode}
+            </p>
           </div>
 
           {/* Profession chips */}
