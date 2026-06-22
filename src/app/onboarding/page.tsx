@@ -71,7 +71,7 @@ export default function OnboardingPage() {
   const goToDashboard = () => {
     setSuccessOpen(false);
     toast('Welcome to Muslim Connect!');
-    router.push('/dashboard');
+    router.push('/feed');
   };
 
   const steps = [
@@ -176,7 +176,7 @@ export default function OnboardingPage() {
               className="mt-7 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-primary px-7 text-sm font-semibold text-white shadow-card transition-all hover:scale-[1.02] hover:bg-primary-hover"
             >
               <Sparkles className="h-4 w-4" aria-hidden />
-              Go to My Dashboard
+              Go to My Feed
             </button>
           </motion.div>
         </div>

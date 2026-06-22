@@ -111,7 +111,7 @@ export default function LoginPage() {
     };
     login(user);
     toast('Welcome back to Muslim Connect!');
-    router.push('/dashboard');
+    router.push('/feed');
   };
 
   return (
