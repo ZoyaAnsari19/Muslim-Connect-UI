@@ -44,7 +44,7 @@ export default function EmploymentNetworkPage() {
     <PageTransition>
       <BackToFeed />
       {/* Hero with stats */}
-      <section className="pattern-overlay-light relative overflow-hidden bg-emerald-gradient px-4 pb-16 pt-36 sm:pb-20 sm:pt-44">
+      <section className="pattern-overlay-light relative overflow-hidden bg-emerald-gradient px-4 pb-16 pt-14 sm:pb-20 sm:pt-16">
         <div className="absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-gold/15 blur-3xl" aria-hidden />
         <div className="relative mx-auto max-w-4xl text-center">
           <motion.div
