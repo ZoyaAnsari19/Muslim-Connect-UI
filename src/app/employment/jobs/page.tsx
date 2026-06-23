@@ -438,13 +438,13 @@ export default function BrowseJobsPage() {
   };
 
   return (
-    <DashboardShell>
+    <DashboardShell flushTop>
       <PageHeader
         eyebrow="MCEN · Job Board"
         title="Browse Jobs"
         subtitle="Opportunities from the community — updated daily"
-        backHref="/employment-network"
-        backLabel="Employment Network"
+        backHref="/employment/job-seeker-dashboard"
+        backLabel="Back"
         actions={
           <Link href="/employment/post-job">
             <Button variant="gold" size="sm">
