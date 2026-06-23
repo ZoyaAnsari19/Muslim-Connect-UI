@@ -24,13 +24,21 @@ const amiri = Amiri({
   display: 'swap',
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+const SITE_TITLE = 'Muslim Connect — Connecting the Global Muslim Community';
+const SITE_DESCRIPTION =
+  'Discover masjids, dargahs & madrasas, network with Muslim professionals, read Islamic content, and find opportunities through the Muslim Connect Employment Network.';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: 'Muslim Connect — Connecting the Global Muslim Community',
+    default: SITE_TITLE,
     template: '%s | Muslim Connect',
   },
-  description:
-    'Discover masjids, dargahs & madrasas, network with Muslim professionals, read Islamic content, and find opportunities through the Muslim Connect Employment Network.',
+  description: SITE_DESCRIPTION,
   keywords: [
     'Muslim community',
     'Masjid finder',
@@ -40,6 +48,19 @@ export const metadata: Metadata = {
     'Duas',
     'Hadees',
   ],
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'Muslim Connect',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
