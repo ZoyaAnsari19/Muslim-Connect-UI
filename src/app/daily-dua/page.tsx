@@ -10,6 +10,7 @@ import ShareActions from '@/components/content/ShareActions';
 import EmptyState from '@/components/ui/EmptyState';
 import Badge from '@/components/ui/Badge';
 import PageTransition from '@/components/PageTransition';
+import BackToFeed from '@/components/BackToFeed';
 
 export default function DailyDuaPage() {
   const [category, setCategory] = useState<string>(DUA_CATEGORIES[0]);
@@ -18,6 +19,7 @@ export default function DailyDuaPage() {
 
   return (
     <PageTransition>
+      <BackToFeed />
       <ContentHero
         icon={BookOpen}
         eyebrow="Daily Duas"

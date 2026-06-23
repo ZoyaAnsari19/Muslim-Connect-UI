@@ -20,6 +20,7 @@ import {
 import { DONATION_PILLARS, DONATION_CATEGORIES } from '@/lib/mock-data';
 import SectionHeading from '@/components/ui/SectionHeading';
 import PageTransition from '@/components/PageTransition';
+import BackToFeed from '@/components/BackToFeed';
 import { useToast } from '@/context/ToastContext';
 
 const ICONS: Record<string, LucideIcon> = {
@@ -50,6 +51,7 @@ export default function DonatePage() {
 
   return (
     <PageTransition>
+      <BackToFeed />
       {/* Hero */}
       <section className="pattern-overlay-light relative overflow-hidden bg-emerald-gradient px-4 pb-20 pt-36 text-center sm:pb-24 sm:pt-44">
         <div className="absolute -right-20 top-20 h-72 w-72 rounded-full bg-gold/15 blur-3xl" aria-hidden />
