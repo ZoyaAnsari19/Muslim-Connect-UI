@@ -14,6 +14,7 @@ const NO_NAVBAR_ROUTES = [
   '/employment-network',
   '/employment/job-seeker-dashboard',
   '/employment/employer-dashboard',
+  '/employment/jobs',
 ];
 
 const matches = (pathname: string, routes: string[]) =>
