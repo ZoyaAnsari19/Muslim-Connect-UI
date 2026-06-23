@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -12,16 +12,30 @@ import {
   ArrowRight,
   UserSearch,
   IndianRupee,
+  Search,
+  SearchX,
 } from 'lucide-react';
 import { JOBS, MCEN_STATS } from '@/lib/mock-data';
 import type { Job, JobTag } from '@/lib/types';
 import StatCounter from '@/components/ui/StatCounter';
 import SectionHeading from '@/components/ui/SectionHeading';
 import Badge from '@/components/ui/Badge';
+import EmptyState from '@/components/ui/EmptyState';
 import { JobCardSkeleton } from '@/components/ui/Skeleton';
 import PageTransition from '@/components/PageTransition';
 import BackToFeed from '@/components/BackToFeed';
 import { useToast } from '@/context/ToastContext';
+
+const TYPE_OPTIONS: JobTag[] = ['Full-time', 'Part-time', 'Remote', 'On-site'];
+const TAG_OPTIONS: JobTag[] = ['Urgent', 'Religious', 'Remote'];
+
+interface JobFilters {
+  type: string;
+  location: string;
+  tags: JobTag[];
+}
+
+const EMPTY_FILTERS: JobFilters = { type: '', location: '', tags: [] };
 
 const TAG_VARIANTS: Record<JobTag, 'red' | 'emerald' | 'blue' | 'neutral'> = {
   Urgent: 'red',
@@ -34,11 +48,40 @@ const TAG_VARIANTS: Record<JobTag, 'red' | 'emerald' | 'blue' | 'neutral'> = {
 
 export default function EmploymentNetworkPage() {
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState<JobFilters>(EMPTY_FILTERS);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(t);
   }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return JOBS.filter((job) => {
+      if (q) {
+        const hay = `${job.title} ${job.organization} ${job.location} ${job.skills.join(' ')}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      if (filters.type && !job.type.includes(filters.type as JobTag)) return false;
+      if (
+        filters.location &&
+        !job.location.toLowerCase().includes(filters.location.trim().toLowerCase())
+      )
+        return false;
+      if (filters.tags.length > 0 && !filters.tags.every((t) => job.type.includes(t))) return false;
+      return true;
+    });
+  }, [query, filters]);
+
+  const activeFilterCount =
+    (filters.type ? 1 : 0) + (filters.location ? 1 : 0) + filters.tags.length;
+
+  const toggleTag = (tag: JobTag) =>
+    setFilters((f) => ({
+      ...f,
+      tags: f.tags.includes(tag) ? f.tags.filter((t) => t !== tag) : [...f.tags, tag],
+    }));
 
   return (
     <PageTransition>
@@ -101,48 +144,154 @@ export default function EmploymentNetworkPage() {
 
       {/* Job listings */}
       <section className="bg-white py-16 sm:py-20" aria-label="Open positions">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionHeading
             eyebrow="Open Positions"
             title="Latest Opportunities"
             subtitle={`${JOBS.length} active openings across religious institutions, tech, education, and more.`}
           />
 
-          {loading ? (
-            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <JobCardSkeleton key={i} />
-              ))}
+          {/* Search bar */}
+          <div className="mt-10">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-body/50" />
+              <input
+                placeholder="Search by title, company, skill or city…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="min-h-[48px] w-full rounded-xl border border-card-border bg-white py-3 pl-11 pr-4 text-sm text-heading shadow-card transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
             </div>
-          ) : (
-            <motion.ul
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: '-40px' }}
-              variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
-              className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2"
-            >
-              {JOBS.map((job) => (
-                <motion.li
-                  key={job.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 28 },
-                    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-                  }}
-                >
-                  <JobCard job={job} />
-                </motion.li>
-              ))}
-            </motion.ul>
-          )}
+          </div>
 
-          <div className="mt-10 text-center">
-            <Link
-              href="/employment/jobs"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-primary-hover hover:shadow-card-hover"
-            >
-              Browse All Jobs with Filters
-            </Link>
+          <div className="mt-6 grid gap-6 lg:grid-cols-[260px_1fr]">
+            {/* Filters sidebar */}
+            <aside>
+              <div className="rounded-2xl border border-card-border bg-ivory/50 p-5 shadow-card lg:sticky lg:top-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-heading">Filters</h3>
+                  {activeFilterCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setFilters(EMPTY_FILTERS)}
+                      className="text-xs font-semibold text-primary transition-colors hover:text-primary-hover"
+                    >
+                      Clear all ({activeFilterCount})
+                    </button>
+                  )}
+                </div>
+
+                <div className="mt-5">
+                  <label htmlFor="filter-type" className="mb-1.5 block text-sm font-medium text-heading">
+                    Job Type
+                  </label>
+                  <select
+                    id="filter-type"
+                    value={filters.type}
+                    onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}
+                    className="min-h-[44px] w-full rounded-xl border border-card-border bg-white px-3 py-2.5 text-sm text-heading focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="">All Types</option>
+                    {TYPE_OPTIONS.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mt-5">
+                  <label htmlFor="filter-location" className="mb-1.5 block text-sm font-medium text-heading">
+                    Location
+                  </label>
+                  <div className="relative">
+                    <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-body/50" />
+                    <input
+                      id="filter-location"
+                      placeholder="e.g. Hyderabad"
+                      value={filters.location}
+                      onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
+                      className="min-h-[44px] w-full rounded-xl border border-card-border bg-white py-2.5 pl-9 pr-3 text-sm text-heading focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <p className="mb-2 text-sm font-medium text-heading">Tags</p>
+                  <div className="flex flex-wrap gap-2">
+                    {TAG_OPTIONS.map((tag) => {
+                      const active = filters.tags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleTag(tag)}
+                          aria-pressed={active}
+                          className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                            active
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-card-border bg-white text-body hover:border-primary hover:text-primary'
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            {/* Results */}
+            <div>
+              {!loading && (
+                <p className="mb-4 text-sm font-medium text-body">
+                  Showing <span className="font-bold text-primary">{filtered.length}</span>{' '}
+                  {filtered.length === 1 ? 'job' : 'jobs'}
+                  {activeFilterCount > 0 || query ? ' matching your search' : ''}
+                </p>
+              )}
+
+              {loading ? (
+                <div className="grid grid-cols-1 gap-5">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <JobCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : filtered.length === 0 ? (
+                <EmptyState
+                  icon={<SearchX className="h-8 w-8" aria-hidden />}
+                  title="No jobs found"
+                  description="Try adjusting your search or clearing some filters."
+                />
+              ) : (
+                <motion.ul
+                  layout
+                  className="grid grid-cols-1 gap-5"
+                >
+                  {filtered.map((job) => (
+                    <motion.li
+                      key={job.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <JobCard job={job} />
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              )}
+
+              <div className="mt-10 text-center">
+                <Link
+                  href="/employment/jobs"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-card transition-all hover:bg-primary-hover hover:shadow-card-hover"
+                >
+                  Browse All Jobs with Filters
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

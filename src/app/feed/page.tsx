@@ -114,7 +114,7 @@ function FeedShell() {
     { label: 'Feed', icon: Newspaper, href: '/feed' },
     { label: 'Masjids & More', icon: Landmark, href: '/dashboard' },
     { label: 'Knowledge', icon: BookOpen, href: '/daily-dua' },
-    { label: 'Professionals', icon: Users, href: '/employment-network' },
+    { label: 'Professionals', icon: Users, href: '/feed/professionals' },
     { label: 'Jobs (MCEN)', icon: Briefcase, href: '/employment' },
     // { label: 'Donations', icon: HandCoins, href: '/donate' },
     { label: 'Prayer Times', icon: Clock, soon: true },
@@ -150,8 +150,6 @@ function FeedShell() {
     { label: 'Masjids Registered', value: 6, icon: Landmark, href: '/feed/masjids' },
     { label: 'Dargahs Registered', value: 2, icon: Sparkles, href: '/feed/dargahs' },
     { label: 'Madrasas Registered', value: 3, icon: GraduationCap, href: '/feed/madrasas' },
-    { label: 'Professionals', value: 48, icon: Users, href: '/feed/professionals' },
-    { label: 'Jobs Active', value: 12, icon: Briefcase, href: '/feed/jobs' },
     { label: 'Opportunities', icon: Compass, href: '/employment-network' },
   ];
 

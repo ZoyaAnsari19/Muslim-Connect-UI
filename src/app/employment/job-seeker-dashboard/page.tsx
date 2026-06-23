@@ -65,7 +65,7 @@ function CompletionMeter() {
   }, [inView]);
 
   return (
-    <div ref={ref} className="relative h-32 w-32" role="img" aria-label={`Profile ${PROFILE_COMPLETION}% complete`}>
+    <div ref={ref} className="relative h-32 w-32 shrink-0" role="img" aria-label={`Profile ${PROFILE_COMPLETION}% complete`}>
       <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
         <circle cx="60" cy="60" r={r} fill="none" stroke="#E8E4DA" strokeWidth="10" />
         <motion.circle
