@@ -10,6 +10,7 @@ export default function MasjidsPage() {
       eyebrow="Community Directory"
       title="Registered Masjids"
       subtitle="Verified masjids across the community — explore prayer times, services, and connect with each masjid."
+      unit="Masjids"
       items={MASJIDS}
     />
   );

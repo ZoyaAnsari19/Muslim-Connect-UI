@@ -23,10 +23,12 @@ interface RegistryViewProps {
   eyebrow: string;
   title: string;
   subtitle: string;
+  /** Plural noun shown next to the count, e.g. "Masjids" */
+  unit: string;
   items: FeaturedItem[];
 }
 
-export default function RegistryView({ eyebrow, title, subtitle, items }: RegistryViewProps) {
+export default function RegistryView({ eyebrow, title, subtitle, unit, items }: RegistryViewProps) {
   const [selected, setSelected] = useState<FeaturedItem | null>(null);
 
   return (
@@ -47,8 +49,9 @@ export default function RegistryView({ eyebrow, title, subtitle, items }: Regist
             </p>
             <h1 className="font-heading text-lg font-bold text-heading sm:text-xl">{title}</h1>
           </div>
-          <span className="shrink-0 rounded-full bg-primary-50 px-3 py-1 text-sm font-bold text-primary">
-            {items.length}
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-primary/20 bg-primary-50 px-3.5 py-1.5 text-sm font-medium text-primary">
+            <span className="font-heading text-base font-bold leading-none">{items.length}</span>
+            {unit}
           </span>
         </div>
       </header>

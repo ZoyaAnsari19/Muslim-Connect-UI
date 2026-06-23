@@ -41,7 +41,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { FeedCard } from '@/components/dashboard/CommunityFeed';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { FEED_POSTS, PRAYER_TIMES_TODAY } from '@/lib/mock-data';
+import { FEED_POSTS, PRAYER_TIMES_TODAY, MASJIDS } from '@/lib/mock-data';
 import { staggerContainer } from '@/components/PageTransition';
 import type { FeedPost } from '@/lib/types';
 
@@ -64,6 +64,14 @@ function FeedShell() {
   const [draft, setDraft] = useState('');
   const [bannerOpen, setBannerOpen] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedMasjidId, setSelectedMasjidId] = useState(MASJIDS[0].id);
+
+  const selectedMasjid = MASJIDS.find((m) => m.id === selectedMasjidId) ?? MASJIDS[0];
+  const todayLabel = new Date().toLocaleDateString('en-IN', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
 
   const initial = (user?.fullName?.charAt(0) ?? 'M').toUpperCase();
   const firstName = user?.fullName?.split(' ')[0] ?? 'Friend';
@@ -129,15 +137,22 @@ function FeedShell() {
   const INSTITUTION_LINKS = [
     { label: 'Register Masjid', icon: Landmark, href: '/create-masjid-profile' },
     { label: 'Register Madrasa', icon: GraduationCap, href: '/create-madrasa-profile' },
+    { label: 'Register Dargah', icon: Sparkles, href: '/create-dargah-profile' },
     { label: 'Manage Profiles', icon: FolderKanban, href: '/manage-profiles' },
   ];
 
-  const STAT_TABS = [
+  const STAT_TABS: {
+    label: string;
+    value?: number;
+    icon: ComponentType<{ className?: string }>;
+    href: string;
+  }[] = [
     { label: 'Masjids Registered', value: 6, icon: Landmark, href: '/feed/masjids' },
     { label: 'Dargahs Registered', value: 2, icon: Sparkles, href: '/feed/dargahs' },
     { label: 'Madrasas Registered', value: 3, icon: GraduationCap, href: '/feed/madrasas' },
-    { label: 'Muslim Professionals', value: 48, icon: Users, href: '/feed/professionals' },
+    { label: 'Professionals', value: 48, icon: Users, href: '/feed/professionals' },
     { label: 'Jobs Active', value: 12, icon: Briefcase, href: '/feed/jobs' },
+    { label: 'Opportunities', icon: Compass, href: '/employment-network' },
   ];
 
   const navActive = (item: NavItem) => item.href === '/feed';
@@ -269,13 +284,6 @@ function FeedShell() {
               <Logo />
             </div>
             <div className="scrollbar-none flex flex-1 items-center gap-2 overflow-x-auto">
-              <Link
-                href="/feed"
-                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-card"
-              >
-                <Newspaper className="h-4 w-4" />
-                Feed
-              </Link>
               {STAT_TABS.map((stat) => (
                 <Link
                   key={stat.label}
@@ -285,7 +293,9 @@ function FeedShell() {
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-50 text-primary">
                     <stat.icon className="h-3.5 w-3.5" />
                   </span>
-                  <span className="font-heading text-sm font-bold text-heading">{stat.value}</span>
+                  {stat.value !== undefined && (
+                    <span className="font-heading text-sm font-bold text-heading">{stat.value}</span>
+                  )}
                   {stat.label}
                 </Link>
               ))}
@@ -492,40 +502,78 @@ function FeedShell() {
                   </div>
                 </section>
 
-                {/* Prayer times */}
+                {/* Masjid prayer times */}
                 <section className="rounded-2xl border border-card-border bg-white p-5 shadow-card">
-                  <div className="flex items-center justify-between">
-                    <h3 className="flex items-center gap-2 font-heading text-sm font-bold text-heading">
-                      <Clock className="h-4 w-4 text-primary" />
-                      Today&apos;s Prayers
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="flex min-w-0 items-center gap-2 font-heading text-sm font-bold text-heading">
+                      <Landmark className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="truncate">{selectedMasjid.name}</span>
                     </h3>
-                    <button
-                      onClick={() => soon('Full timetable')}
-                      className="text-xs font-medium text-primary hover:underline"
-                    >
-                      Full timetable
-                    </button>
+                    <span className="shrink-0 text-xs font-medium text-primary">{todayLabel}</span>
                   </div>
-                  <p className="mt-0.5 text-xs text-body">{user?.city || 'Your city'}</p>
+                  <p className="mt-0.5 flex items-center gap-1 text-xs text-body">
+                    <MapPin className="h-3 w-3 shrink-0 text-gold-dark" />
+                    {selectedMasjid.area}, {selectedMasjid.city}
+                  </p>
+
+                  {/* Masjid selector */}
+                  <label className="mt-3 block">
+                    <span className="mb-1 block text-[11px] font-medium text-body">
+                      Select a masjid to view its details
+                    </span>
+                    <select
+                      value={selectedMasjidId}
+                      onChange={(e) => setSelectedMasjidId(e.target.value)}
+                      className="w-full rounded-xl border border-card-border bg-ivory px-3 py-2 text-sm font-medium text-heading transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      {MASJIDS.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.name} — {m.city}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {/* Selected masjid details */}
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {selectedMasjid.verified && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-semibold text-primary">
+                        <BadgeCheck className="h-3 w-3 text-gold-dark" />
+                        Verified
+                      </span>
+                    )}
+                    {selectedMasjid.capacity && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-ivory px-2.5 py-0.5 text-[11px] font-medium text-body">
+                        <Users className="h-3 w-3 text-gold-dark" />
+                        {selectedMasjid.capacity.toLocaleString()} capacity
+                      </span>
+                    )}
+                  </div>
+
                   <ul className="mt-3 space-y-1.5">
-                    {PRAYER_TIMES_TODAY.map((p, i) => (
-                      <li
-                        key={p.name}
-                        className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm ${
-                          i === 0 ? 'bg-primary text-white' : 'text-heading'
-                        }`}
-                      >
-                        <span className="font-medium">
-                          {p.name}
-                          {i === 0 && (
-                            <span className="ml-2 text-[10px] font-bold uppercase tracking-wide text-gold-light">
-                              Next
-                            </span>
-                          )}
-                        </span>
-                        <span className={i === 0 ? 'text-gold-light' : 'text-body'}>{p.time}</span>
-                      </li>
-                    ))}
+                    {PRAYER_TIMES_TODAY.map((p) => {
+                      const isNext = p.name === selectedMasjid.nextPrayer.name;
+                      return (
+                        <li
+                          key={p.name}
+                          className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm ${
+                            isNext ? 'bg-primary text-white' : 'text-heading'
+                          }`}
+                        >
+                          <span className="font-medium">
+                            {p.name}
+                            {isNext && (
+                              <span className="ml-2 text-[10px] font-bold uppercase tracking-wide text-gold-light">
+                                Next
+                              </span>
+                            )}
+                          </span>
+                          <span className={isNext ? 'text-gold-light' : 'text-body'}>
+                            {isNext ? selectedMasjid.nextPrayer.time : p.time}
+                          </span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </section>
 

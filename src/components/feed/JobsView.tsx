@@ -42,8 +42,9 @@ export default function JobsView() {
             </p>
             <h1 className="font-heading text-lg font-bold text-heading sm:text-xl">Active Jobs</h1>
           </div>
-          <span className="shrink-0 rounded-full bg-primary-50 px-3 py-1 text-sm font-bold text-primary">
-            {JOBS.length}
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-primary/20 bg-primary-50 px-3.5 py-1.5 text-sm font-medium text-primary">
+            <span className="font-heading text-base font-bold leading-none">{JOBS.length}</span>
+            Jobs
           </span>
         </div>
       </header>

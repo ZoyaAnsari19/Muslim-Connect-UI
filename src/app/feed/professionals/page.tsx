@@ -10,6 +10,7 @@ export default function ProfessionalsPage() {
       eyebrow="Community Directory"
       title="Muslim Professionals"
       subtitle="Trusted Muslim professionals across medical, religious, engineering, and business fields."
+      unit="Professionals"
       items={PROFESSIONALS}
     />
   );

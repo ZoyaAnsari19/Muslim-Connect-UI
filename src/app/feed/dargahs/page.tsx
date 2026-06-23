@@ -10,6 +10,7 @@ export default function DargahsPage() {
       eyebrow="Community Directory"
       title="Registered Dargahs"
       subtitle="Revered dargahs and their spiritual heritage — visit timings, urs dates, and services."
+      unit="Dargahs"
       items={DARGAHS}
     />
   );
