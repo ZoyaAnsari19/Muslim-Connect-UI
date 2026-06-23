@@ -11,11 +11,13 @@ interface DashboardShellProps {
   children: ReactNode;
   /** Max-width utility, defaults to max-w-7xl */
   width?: string;
+  /** Reduce top padding when the global navbar is hidden on this route */
+  flushTop?: boolean;
 }
 
-export function DashboardShell({ children, width = 'max-w-7xl' }: DashboardShellProps) {
+export function DashboardShell({ children, width = 'max-w-7xl', flushTop = false }: DashboardShellProps) {
   return (
-    <div className="min-h-screen bg-ivory pb-20 pt-24 sm:pt-28">
+    <div className={`min-h-screen bg-ivory pb-20 ${flushTop ? 'pt-8 sm:pt-10' : 'pt-24 sm:pt-28'}`}>
       <div className={`mx-auto w-full ${width} px-4 sm:px-6 lg:px-8`}>{children}</div>
     </div>
   );

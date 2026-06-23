@@ -200,12 +200,12 @@ function JobSeekerDashboardContent() {
   ];
 
   return (
-    <DashboardShell width="max-w-5xl">
+    <DashboardShell width="max-w-5xl" flushTop>
       <PageHeader
         title="Job Seeker Dashboard"
         subtitle="Track applications and discover opportunities within the community"
-        backHref="/dashboard"
-        backLabel="Back to Dashboard"
+        backHref="/employment-network"
+        backLabel="Back"
         eyebrow="MCEN · Job Seeker"
         actions={
           <Link href="/employment/jobs">
