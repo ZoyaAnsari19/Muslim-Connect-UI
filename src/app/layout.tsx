@@ -55,11 +55,20 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     locale: 'en_US',
+    images: [
+      {
+        url: '/muslim-connect-image.png',
+        width: 1894,
+        height: 903,
+        alt: SITE_TITLE,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
+    images: ['/muslim-connect-image.png'],
   },
 };
 
