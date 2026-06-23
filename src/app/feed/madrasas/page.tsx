@@ -10,6 +10,7 @@ export default function MadrasasPage() {
       eyebrow="Community Directory"
       title="Registered Madrasas"
       subtitle="Islamic institutions offering Quran, Aalim, and Tajweed courses — discover programs and admissions."
+      unit="Madrasas"
       items={MADRASAS}
     />
   );
