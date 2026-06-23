@@ -29,7 +29,7 @@ const TYPE_META: Record<FeedPost['type'], { label: string; icon: typeof Megaphon
   event: { label: 'Event', icon: CalendarDays, variant: 'blue' },
 };
 
-function FeedCard({ post }: { post: FeedPost }) {
+export function FeedCard({ post }: { post: FeedPost }) {
   const { toast } = useToast();
   const { items: likedIds, setItems: setLikedIds } = useFeedLikes();
   const [commentsOpen, setCommentsOpen] = useState(false);

@@ -16,6 +16,7 @@ import {
   FolderKanban,
   ShieldCheck,
   ChevronRight,
+  ArrowLeft,
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
@@ -88,6 +89,14 @@ function DashboardContent() {
 
   return (
     <DashboardShell>
+      <Link
+        href="/feed"
+        className="mb-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary-hover"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+        Back to Feed
+      </Link>
+
       {/* ── Welcome header ── */}
       <motion.header
         initial={{ opacity: 0, y: 18 }}

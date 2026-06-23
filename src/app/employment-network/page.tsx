@@ -20,6 +20,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import Badge from '@/components/ui/Badge';
 import { JobCardSkeleton } from '@/components/ui/Skeleton';
 import PageTransition from '@/components/PageTransition';
+import BackToFeed from '@/components/BackToFeed';
 import { useToast } from '@/context/ToastContext';
 
 const TAG_VARIANTS: Record<JobTag, 'red' | 'emerald' | 'blue' | 'neutral'> = {
@@ -41,6 +42,7 @@ export default function EmploymentNetworkPage() {
 
   return (
     <PageTransition>
+      <BackToFeed />
       {/* Hero with stats */}
       <section className="pattern-overlay-light relative overflow-hidden bg-emerald-gradient px-4 pb-16 pt-36 sm:pb-20 sm:pt-44">
         <div className="absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-gold/15 blur-3xl" aria-hidden />
