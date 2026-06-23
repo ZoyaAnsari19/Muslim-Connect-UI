@@ -77,12 +77,12 @@ function EmployerDashboardContent() {
   };
 
   return (
-    <DashboardShell width="max-w-5xl">
+    <DashboardShell width="max-w-5xl" flushTop>
       <PageHeader
         title="Employer Dashboard"
         subtitle="Manage your job posts and connect with talented candidates"
-        backHref="/dashboard"
-        backLabel="Back to Dashboard"
+        backHref="/employment-network"
+        backLabel="Back"
         eyebrow="MCEN · Employer"
         actions={
           <Link href="/employment/post-job">

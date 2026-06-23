@@ -10,7 +10,11 @@ import Footer from './Footer';
 // Routes that render their own full-screen app shell (no global nav/footer)
 const FULLSCREEN_ROUTES = ['/feed'];
 // Routes that hide only the global navbar (footer stays)
-const NO_NAVBAR_ROUTES = ['/employment-network'];
+const NO_NAVBAR_ROUTES = [
+  '/employment-network',
+  '/employment/job-seeker-dashboard',
+  '/employment/employer-dashboard',
+];
 
 const matches = (pathname: string, routes: string[]) =>
   routes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
