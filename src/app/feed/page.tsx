@@ -108,7 +108,7 @@ function FeedShell() {
     { label: 'Knowledge', icon: BookOpen, href: '/daily-dua' },
     { label: 'Professionals', icon: Users, href: '/employment-network' },
     { label: 'Jobs (MCEN)', icon: Briefcase, href: '/employment' },
-    { label: 'Donations', icon: HandCoins, href: '/donate' },
+    // { label: 'Donations', icon: HandCoins, href: '/donate' },
     { label: 'Prayer Times', icon: Clock, soon: true },
     { label: 'Messages', icon: MessageSquare, soon: true },
     { label: 'Saved', icon: Bookmark, soon: true },
@@ -132,7 +132,40 @@ function FeedShell() {
     { label: 'Manage Profiles', icon: FolderKanban, href: '/manage-profiles' },
   ];
 
+  const STAT_TABS = [
+    { label: 'Masjids Registered', value: 6, icon: Landmark, href: '/feed/masjids' },
+    { label: 'Dargahs Registered', value: 2, icon: Sparkles, href: '/feed/dargahs' },
+    { label: 'Madrasas Registered', value: 3, icon: GraduationCap, href: '/feed/madrasas' },
+    { label: 'Muslim Professionals', value: 48, icon: Users, href: '/feed/professionals' },
+    { label: 'Jobs Active', value: 12, icon: Briefcase, href: '/feed/jobs' },
+  ];
+
   const navActive = (item: NavItem) => item.href === '/feed';
+
+  const renderNavItem = (item: NavItem, onNavigate?: () => void) => {
+    const active = navActive(item);
+    const className = `flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${
+      active ? 'bg-primary-50 text-primary' : 'text-heading hover:bg-ivory'
+    }`;
+    return item.href ? (
+      <Link key={item.label} href={item.href} className={className} onClick={onNavigate}>
+        <item.icon className="h-5 w-5 text-primary" />
+        {item.label}
+      </Link>
+    ) : (
+      <button
+        key={item.label}
+        onClick={() => {
+          onNavigate?.();
+          soon(item.label);
+        }}
+        className={`w-full ${className}`}
+      >
+        <item.icon className="h-5 w-5 text-primary" />
+        {item.label}
+      </button>
+    );
+  };
 
   const renderSidebarBody = (onNavigate?: () => void) => (
     <>
@@ -164,30 +197,14 @@ function FeedShell() {
         </button>
       </div>
       <nav className="mt-4 flex-1 space-y-1 overflow-y-auto px-3 pb-4">
-        {NAV_PRIMARY.map((item) => {
-          const active = navActive(item);
-          const className = `flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${
-            active ? 'bg-primary-50 text-primary' : 'text-heading hover:bg-ivory'
-          }`;
-          return item.href ? (
-            <Link key={item.label} href={item.href} className={className} onClick={onNavigate}>
-              <item.icon className="h-5 w-5 text-primary" />
-              {item.label}
-            </Link>
-          ) : (
-            <button
-              key={item.label}
-              onClick={() => {
-                onNavigate?.();
-                soon(item.label);
-              }}
-              className={`w-full ${className}`}
-            >
-              <item.icon className="h-5 w-5 text-primary" />
-              {item.label}
-            </button>
-          );
-        })}
+        {NAV_PRIMARY.map((item) => renderNavItem(item, onNavigate))}
+
+        <div className="px-3 pb-1 pt-5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-body/70">
+            Quick Actions
+          </p>
+        </div>
+        {QUICK_ACTIONS.map((item) => renderNavItem(item, onNavigate))}
       </nav>
       <div className="border-t border-card-border p-3">
         <button
@@ -252,24 +269,29 @@ function FeedShell() {
               <Logo />
             </div>
             <div className="scrollbar-none flex flex-1 items-center gap-2 overflow-x-auto">
-                {QUICK_ACTIONS.map((action) => {
-                  const className =
-                    'flex shrink-0 items-center gap-1.5 rounded-full border border-card-border bg-white px-3.5 py-2 text-xs font-medium text-heading shadow-sm transition-colors hover:border-primary hover:text-primary';
-                  return action.href ? (
-                    <Link key={action.label} href={action.href} className={className}>
-                      <action.icon className="h-4 w-4 text-primary" />
-                      {action.label}
-                    </Link>
-                  ) : (
-                    <button key={action.label} onClick={() => soon(action.label)} className={className}>
-                      <action.icon className="h-4 w-4 text-primary" />
-                      {action.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <Link
+                href="/feed"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-card"
+              >
+                <Newspaper className="h-4 w-4" />
+                Feed
+              </Link>
+              {STAT_TABS.map((stat) => (
+                <Link
+                  key={stat.label}
+                  href={stat.href}
+                  className="flex shrink-0 items-center gap-2 rounded-full border border-card-border bg-white px-3 py-1.5 text-xs font-medium text-body shadow-sm transition-colors hover:border-primary hover:text-primary"
+                >
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-50 text-primary">
+                    <stat.icon className="h-3.5 w-3.5" />
+                  </span>
+                  <span className="font-heading text-sm font-bold text-heading">{stat.value}</span>
+                  {stat.label}
+                </Link>
+              ))}
             </div>
           </div>
+        </div>
 
           {/* Inner content: center feed (right rail is fixed to the edge) */}
           <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6">
