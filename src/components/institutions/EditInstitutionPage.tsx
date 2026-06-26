@@ -16,9 +16,11 @@ import type { InstitutionType } from '@/lib/types';
 export default function EditInstitutionPage({
   type,
   profileId,
+  flushTop = false,
 }: {
   type: InstitutionType;
   profileId: string;
+  flushTop?: boolean;
 }) {
   const { items: profiles, hydrated } = useOwnedProfiles();
   const profile = profiles.find((p) => p.id === profileId && p.type === type);
@@ -26,7 +28,7 @@ export default function EditInstitutionPage({
   if (!hydrated) {
     return (
       <ProtectedRoute>
-        <DashboardShell width="max-w-3xl">
+        <DashboardShell width="max-w-3xl" flushTop={flushTop}>
           <Skeleton className="mb-8 h-10 w-64" />
           <div className="space-y-6">
             <Skeleton className="h-72 w-full" />
@@ -40,7 +42,7 @@ export default function EditInstitutionPage({
   if (!profile) {
     return (
       <ProtectedRoute>
-        <DashboardShell width="max-w-3xl">
+        <DashboardShell width="max-w-3xl" flushTop={flushTop}>
           <PageHeader
             title="Profile Not Found"
             backHref="/manage-profiles"
@@ -62,5 +64,5 @@ export default function EditInstitutionPage({
     );
   }
 
-  return <InstitutionForm type={type} existing={profile} />;
+  return <InstitutionForm type={type} existing={profile} flushTop={flushTop} />;
 }

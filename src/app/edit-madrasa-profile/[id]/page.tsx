@@ -5,5 +5,5 @@ import EditInstitutionPage from '@/components/institutions/EditInstitutionPage';
 
 export default function EditMadrasaProfilePage() {
   const { id } = useParams<{ id: string }>();
-  return <EditInstitutionPage type="madrasa" profileId={id} />;
+  return <EditInstitutionPage type="madrasa" profileId={id} flushTop />;
 }

@@ -15,15 +15,35 @@ const NO_NAVBAR_ROUTES = [
   '/employment/job-seeker-dashboard',
   '/employment/employer-dashboard',
   '/employment/jobs',
+  '/employment/post-job',
+  '/my-profile',
+  '/create-masjid-profile',
+  '/create-dargah-profile',
+  '/create-madrasa-profile',
+  '/manage-profiles',
+  '/daily-dua',
+  '/donate',
+];
+// Dynamic routes that hide the navbar (matched by prefix, e.g. /manage-donations/:id)
+const NO_NAVBAR_PREFIXES = [
+  '/manage-donations',
+  '/edit-masjid-profile',
+  '/edit-madrasa-profile',
+  '/edit-event',
 ];
 
-const matches = (pathname: string, routes: string[]) =>
+// Prefix match — also covers nested sub-routes (e.g. /feed/masjids)
+const matchesPrefix = (pathname: string, routes: string[]) =>
   routes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
+
+// Exact match — only the route itself, not its sub-routes
+const matchesExact = (pathname: string, routes: string[]) => routes.includes(pathname);
 
 export default function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isFullscreen = matches(pathname, FULLSCREEN_ROUTES);
-  const hideNavbar = matches(pathname, NO_NAVBAR_ROUTES);
+  const isFullscreen = matchesPrefix(pathname, FULLSCREEN_ROUTES);
+  const hideNavbar =
+    matchesExact(pathname, NO_NAVBAR_ROUTES) || matchesPrefix(pathname, NO_NAVBAR_PREFIXES);
 
   if (isFullscreen) return <>{children}</>;
 

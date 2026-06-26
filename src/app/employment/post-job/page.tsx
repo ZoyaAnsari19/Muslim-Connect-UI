@@ -195,7 +195,7 @@ function PostJobInner() {
   };
 
   return (
-    <DashboardShell width="max-w-3xl">
+    <DashboardShell width="max-w-3xl" flushTop>
       <PageHeader
         eyebrow="MCEN · Employer"
         title="Post a Job"

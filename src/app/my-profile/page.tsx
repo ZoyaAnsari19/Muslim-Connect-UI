@@ -140,7 +140,7 @@ function MyProfileContent() {
   if (!user) return null;
 
   return (
-    <DashboardShell width="max-w-5xl">
+    <DashboardShell width="max-w-5xl" flushTop>
       <PageHeader
         title="My Profile"
         backHref="/dashboard"

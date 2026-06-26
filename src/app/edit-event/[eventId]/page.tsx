@@ -27,7 +27,7 @@ function EditEventContent() {
 
   if (!hydrated) {
     return (
-      <DashboardShell width="max-w-2xl">
+      <DashboardShell width="max-w-2xl" flushTop>
         <Skeleton className="mb-8 h-10 w-64" />
         <Skeleton className="h-96 w-full" />
       </DashboardShell>
@@ -36,7 +36,7 @@ function EditEventContent() {
 
   if (!event) {
     return (
-      <DashboardShell width="max-w-2xl">
+      <DashboardShell width="max-w-2xl" flushTop>
         <PageHeader
           title="Event Not Found"
           backHref="/manage-profiles"
@@ -78,7 +78,7 @@ function EditEventContent() {
   };
 
   return (
-    <DashboardShell width="max-w-2xl">
+    <DashboardShell width="max-w-2xl" flushTop>
       <PageHeader
         title="Edit Event"
         subtitle={profile ? `${event.title} · ${profile.name}` : event.title}

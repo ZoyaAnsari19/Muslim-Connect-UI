@@ -21,6 +21,7 @@ export default function DailyDuaPage() {
     <PageTransition>
       <BackToFeed />
       <ContentHero
+        flushTop
         icon={BookOpen}
         eyebrow="Daily Duas"
         title="Duas for"
