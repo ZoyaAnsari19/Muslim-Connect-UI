@@ -58,7 +58,7 @@ function ManageDonationsContent() {
 
   if (!hydrated) {
     return (
-      <DashboardShell width="max-w-4xl">
+      <DashboardShell width="max-w-4xl" flushTop>
         <Skeleton className="mb-8 h-10 w-72" />
         <div className="space-y-4">
           {Array.from({ length: 2 }).map((_, i) => (
@@ -71,7 +71,7 @@ function ManageDonationsContent() {
 
   if (!profile) {
     return (
-      <DashboardShell width="max-w-4xl">
+      <DashboardShell width="max-w-4xl" flushTop>
         <PageHeader
           title="Profile Not Found"
           backHref="/manage-profiles"
@@ -139,7 +139,7 @@ function ManageDonationsContent() {
   };
 
   return (
-    <DashboardShell width="max-w-4xl">
+    <DashboardShell width="max-w-4xl" flushTop>
       <PageHeader
         title={`Donations — ${profile.name}`}
         subtitle={`${profile.area}, ${profile.city} · Run fundraising campaigns for your community`}

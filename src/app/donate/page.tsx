@@ -53,7 +53,7 @@ export default function DonatePage() {
     <PageTransition>
       <BackToFeed />
       {/* Hero */}
-      <section className="pattern-overlay-light relative overflow-hidden bg-emerald-gradient px-4 pb-20 pt-36 text-center sm:pb-24 sm:pt-44">
+      <section className="pattern-overlay-light relative overflow-hidden bg-emerald-gradient px-4 pb-20 pt-20 text-center sm:pb-24 sm:pt-24">
         <div className="absolute -right-20 top-20 h-72 w-72 rounded-full bg-gold/15 blur-3xl" aria-hidden />
         <motion.div
           initial={{ opacity: 0, y: 24 }}

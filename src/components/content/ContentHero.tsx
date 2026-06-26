@@ -11,6 +11,8 @@ interface ContentHeroProps {
   subtitle: string;
   arabic?: string;
   arabicTranslation?: string;
+  /** Reduce top padding when the global navbar is hidden on this route */
+  flushTop?: boolean;
 }
 
 /** Shared hero band for Islamic content pages */
@@ -22,9 +24,14 @@ export default function ContentHero({
   subtitle,
   arabic,
   arabicTranslation,
+  flushTop = false,
 }: ContentHeroProps) {
   return (
-    <section className="pattern-overlay-light relative bg-emerald-gradient px-4 pb-16 pt-36 text-center sm:pb-20 sm:pt-44">
+    <section
+      className={`pattern-overlay-light relative bg-emerald-gradient px-4 pb-16 text-center sm:pb-20 ${
+        flushTop ? 'pt-20 sm:pt-24' : 'pt-36 sm:pt-44'
+      }`}
+    >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}

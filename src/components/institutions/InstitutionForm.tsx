@@ -278,9 +278,11 @@ const PRAYER_LABELS: { key: keyof PrayerTimes; label: string }[] = [
 export default function InstitutionForm({
   type,
   existing,
+  flushTop = false,
 }: {
   type: InstitutionType;
   existing?: OwnedProfile;
+  flushTop?: boolean;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -392,7 +394,7 @@ export default function InstitutionForm({
 
   return (
     <ProtectedRoute>
-      <DashboardShell width="max-w-3xl">
+      <DashboardShell width="max-w-3xl" flushTop={flushTop}>
         <PageHeader
           title={isEdit ? `Edit ${meta.label} Profile` : `Register a New ${meta.label}`}
           subtitle={

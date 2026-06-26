@@ -166,7 +166,7 @@ function ManageProfilesContent() {
   };
 
   return (
-    <DashboardShell>
+    <DashboardShell flushTop>
       <PageHeader
         title="Manage Profiles"
         subtitle="Masjids, dargahs and madrasas you have registered"
