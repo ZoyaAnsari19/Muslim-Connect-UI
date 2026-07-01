@@ -41,11 +41,29 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { FeedCard } from '@/components/dashboard/CommunityFeed';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { FEED_POSTS, PRAYER_TIMES_TODAY, MASJIDS } from '@/lib/mock-data';
+import { FEED_POSTS, PRAYER_TIMES_TODAY, MASJIDS, FEATURED_ITEMS } from '@/lib/mock-data';
 import { staggerContainer } from '@/components/PageTransition';
+import LocationScopeTabs from '@/components/feed/LocationScopeTabs';
+import {
+  matchesLocationScope,
+  LOCATION_TABS,
+  type LocationScope,
+} from '@/lib/location-scope';
 import type { FeedPost } from '@/lib/types';
 
 type Tab = 'foryou' | 'following' | 'trending';
+
+function getPostLocation(post: FeedPost): { area: string; city: string; state: string } | null {
+  if (post.linkedListingId) {
+    const item = FEATURED_ITEMS.find((i) => i.id === post.linkedListingId);
+    if (item) return { area: item.area, city: item.city, state: item.state };
+  }
+  const parts = post.authorMeta.split('·').map((s) => s.trim());
+  const locPart = parts[parts.length - 1] ?? '';
+  const [city, state] = locPart.split(',').map((s) => s.trim());
+  if (city) return { area: '', city, state: state ?? '' };
+  return null;
+}
 
 interface NavItem {
   label: string;
@@ -61,6 +79,7 @@ function FeedShell() {
 
   const [posts, setPosts] = useState<FeedPost[]>(FEED_POSTS);
   const [tab, setTab] = useState<Tab>('foryou');
+  const [locationScope, setLocationScope] = useState<LocationScope>('nearby');
   const [draft, setDraft] = useState('');
   const [bannerOpen, setBannerOpen] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -104,15 +123,26 @@ function FeedShell() {
     toast('Posted to the community', 'success');
   };
 
+  const userArea = user?.area ?? '';
+  const userCity = user?.city ?? '';
+  const userState = user?.state ?? '';
+
   const visiblePosts = useMemo(() => {
-    if (tab === 'following') return posts.filter((p) => p.linkedListingId);
-    if (tab === 'trending') return [...posts].sort((a, b) => b.likes - a.likes);
-    return posts;
-  }, [posts, tab]);
+    let filtered = posts.filter((p) => {
+      const loc = getPostLocation(p);
+      if (!loc) return locationScope === 'worldwide' || locationScope === 'country';
+      return matchesLocationScope(loc, locationScope, userArea, userCity, userState);
+    });
+
+    if (tab === 'following') filtered = filtered.filter((p) => p.linkedListingId);
+    if (tab === 'trending') filtered = [...filtered].sort((a, b) => b.likes - a.likes);
+
+    return filtered;
+  }, [posts, tab, locationScope, userArea, userCity, userState]);
 
   const NAV_PRIMARY: NavItem[] = [
     { label: 'Feed', icon: Newspaper, href: '/feed' },
-    { label: 'Masjids & More', icon: Landmark, href: '/dashboard' },
+    { label: 'Dashboard', icon: Landmark, href: '/dashboard' },
     { label: 'Knowledge', icon: BookOpen, href: '/daily-dua' },
     { label: 'Professionals', icon: Users, href: '/feed/professionals' },
     { label: 'Jobs (MCEN)', icon: Briefcase, href: '/employment' },
@@ -143,13 +173,12 @@ function FeedShell() {
 
   const STAT_TABS: {
     label: string;
-    value?: number;
     icon: ComponentType<{ className?: string }>;
     href: string;
   }[] = [
-    { label: 'Masjids Registered', value: 6, icon: Landmark, href: '/feed/masjids' },
-    { label: 'Dargahs Registered', value: 2, icon: Sparkles, href: '/feed/dargahs' },
-    { label: 'Madrasas Registered', value: 3, icon: GraduationCap, href: '/feed/madrasas' },
+    { label: 'Masjids Registered', icon: Landmark, href: '/feed/masjids' },
+    { label: 'Dargahs Registered', icon: Sparkles, href: '/feed/dargahs' },
+    { label: 'Madrasas Registered', icon: GraduationCap, href: '/feed/madrasas' },
     { label: 'Opportunities', icon: Compass, href: '/employment-network' },
   ];
 
@@ -291,9 +320,6 @@ function FeedShell() {
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-50 text-primary">
                     <stat.icon className="h-3.5 w-3.5" />
                   </span>
-                  {stat.value !== undefined && (
-                    <span className="font-heading text-sm font-bold text-heading">{stat.value}</span>
-                  )}
                   {stat.label}
                 </Link>
               ))}
@@ -305,8 +331,11 @@ function FeedShell() {
           <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6">
             {/* Center feed */}
             <main className="min-w-0">
-              {/* Tabs */}
-              <div className="flex items-center gap-6 border-b border-card-border">
+              {/* Location scope tabs */}
+              <LocationScopeTabs scope={locationScope} onChange={setLocationScope} />
+
+              {/* Feed tabs */}
+              <div className="mt-4 flex items-center gap-6 border-b border-card-border">
                 {([
                   { id: 'foryou', label: 'For You' },
                   { id: 'following', label: 'Following' },
@@ -409,7 +438,7 @@ function FeedShell() {
 
               {/* Posts */}
               <motion.div
-                key={tab}
+                key={`${tab}-${locationScope}`}
                 variants={staggerContainer}
                 initial="hidden"
                 animate="show"
@@ -417,7 +446,13 @@ function FeedShell() {
               >
                 {visiblePosts.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-card-border bg-white/60 p-10 text-center">
-                    <p className="text-sm text-body">No posts to show in this tab yet.</p>
+                    <p className="text-sm font-medium text-heading">
+                      No posts in{' '}
+                      {LOCATION_TABS.find((t) => t.id === locationScope)?.label ?? 'this area'} yet
+                    </p>
+                    <p className="mt-1 text-xs text-body">
+                      Try another scope or check back soon, InshaAllah.
+                    </p>
                   </div>
                 ) : (
                   visiblePosts.map((p) => <FeedCard key={p.id} post={p} />)

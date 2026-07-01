@@ -170,8 +170,8 @@ function ManageProfilesContent() {
       <PageHeader
         title="Manage Profiles"
         subtitle="Masjids, dargahs and madrasas you have registered"
-        backHref="/dashboard"
-        backLabel="Back to Dashboard"
+        backHref="/feed"
+        backLabel="Back to Feed"
         eyebrow="Institution Management"
         actions={
           hydrated && profiles.length > 0 ? (

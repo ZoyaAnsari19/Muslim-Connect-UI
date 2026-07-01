@@ -293,6 +293,8 @@ export default function InstitutionForm({
 
   const meta = TYPE_META[type];
   const isEdit = !!existing;
+  const exitHref = isEdit ? '/manage-profiles' : '/feed';
+  const exitLabel = isEdit ? 'Manage Profiles' : 'Back to Feed';
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -402,8 +404,8 @@ export default function InstitutionForm({
               ? `Update the details of ${existing?.name}`
               : `Add a ${meta.label.toLowerCase()} to the Muslim Connect directory`
           }
-          backHref="/manage-profiles"
-          backLabel="Manage Profiles"
+          backHref={exitHref}
+          backLabel={exitLabel}
           eyebrow="Institution Management"
         />
 
@@ -700,7 +702,7 @@ export default function InstitutionForm({
             <Button
               type="button"
               variant="ghost"
-              onClick={() => router.push('/manage-profiles')}
+              onClick={() => router.push(exitHref)}
             >
               Cancel
             </Button>

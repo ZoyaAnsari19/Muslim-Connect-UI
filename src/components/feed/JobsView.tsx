@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -13,7 +14,16 @@ import {
 import { JOBS } from '@/lib/mock-data';
 import type { Job, JobTag } from '@/lib/types';
 import Badge from '@/components/ui/Badge';
+import LocationScopeTabs from '@/components/feed/LocationScopeTabs';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import {
+  matchesLocationScope,
+  countByLocationScope,
+  parseJobLocation,
+  LOCATION_TABS,
+  type LocationScope,
+} from '@/lib/location-scope';
 
 const TAG_VARIANTS: Record<JobTag, 'red' | 'emerald' | 'blue' | 'neutral'> = {
   Urgent: 'red',
@@ -25,6 +35,26 @@ const TAG_VARIANTS: Record<JobTag, 'red' | 'emerald' | 'blue' | 'neutral'> = {
 };
 
 export default function JobsView() {
+  const { user } = useAuth();
+  const [locationScope, setLocationScope] = useState<LocationScope>('nearby');
+
+  const userArea = user?.area ?? '';
+  const userCity = user?.city ?? '';
+  const userState = user?.state ?? '';
+
+  const scopeCounts = useMemo(
+    () =>
+      countByLocationScope(JOBS, (job) => parseJobLocation(job.location), userArea, userCity, userState),
+    [userArea, userCity, userState]
+  );
+
+  const filteredJobs = useMemo(() => {
+    return JOBS.filter((job) => {
+      const loc = parseJobLocation(job.location);
+      return matchesLocationScope(loc, locationScope, userArea, userCity, userState);
+    });
+  }, [locationScope, userArea, userCity, userState]);
+
   return (
     <div className="min-h-screen bg-ivory">
       <header className="sticky top-0 z-30 border-b border-card-border bg-white/90 backdrop-blur">
@@ -42,36 +72,56 @@ export default function JobsView() {
             </p>
             <h1 className="font-heading text-lg font-bold text-heading sm:text-xl">Active Jobs</h1>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-primary/20 bg-primary-50 px-3.5 py-1.5 text-sm font-medium text-primary">
-            <span className="font-heading text-base font-bold leading-none">{JOBS.length}</span>
-            Jobs
+          <span
+            className="inline-flex min-h-[40px] shrink-0 items-center px-4 text-sm opacity-0 pointer-events-none"
+            aria-hidden
+          >
+            Back to Feed
           </span>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <p className="mb-6 max-w-2xl text-sm leading-relaxed text-body">
+        <p className="mb-4 max-w-2xl text-sm leading-relaxed text-body">
           Halal career opportunities across religious institutions, tech, education, and more.
         </p>
 
-        <motion.ul
-          initial="hidden"
-          animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {JOBS.map((job) => (
-            <motion.li
-              key={job.id}
-              variants={{
-                hidden: { opacity: 0, y: 24 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
-              }}
-            >
-              <JobCard job={job} />
-            </motion.li>
-          ))}
-        </motion.ul>
+        <LocationScopeTabs
+          scope={locationScope}
+          onChange={setLocationScope}
+          counts={scopeCounts}
+          className="mb-6"
+        />
+
+        {filteredJobs.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-card-border bg-white/60 p-10 text-center">
+            <p className="text-sm font-medium text-heading">
+              No jobs in{' '}
+              {LOCATION_TABS.find((t) => t.id === locationScope)?.label ?? 'this area'} yet
+            </p>
+            <p className="mt-1 text-xs text-body">Try another scope or check back soon, InshaAllah.</p>
+          </div>
+        ) : (
+          <motion.ul
+            key={locationScope}
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredJobs.map((job) => (
+              <motion.li
+                key={job.id}
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
+                }}
+              >
+                <JobCard job={job} />
+              </motion.li>
+            ))}
+          </motion.ul>
+        )}
       </main>
     </div>
   );

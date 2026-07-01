@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -18,6 +18,9 @@ import type { FeaturedItem } from '@/lib/types';
 import Badge from '@/components/ui/Badge';
 import StarRating from '@/components/ui/StarRating';
 import DetailModal from '@/components/home/DetailModal';
+import LocationScopeTabs from '@/components/feed/LocationScopeTabs';
+import { useAuth } from '@/context/AuthContext';
+import { matchesLocationScope, countByLocationScope, LOCATION_TABS, type LocationScope } from '@/lib/location-scope';
 
 interface RegistryViewProps {
   eyebrow: string;
@@ -29,7 +32,24 @@ interface RegistryViewProps {
 }
 
 export default function RegistryView({ eyebrow, title, subtitle, unit, items }: RegistryViewProps) {
+  const { user } = useAuth();
   const [selected, setSelected] = useState<FeaturedItem | null>(null);
+  const [locationScope, setLocationScope] = useState<LocationScope>('nearby');
+
+  const userArea = user?.area ?? '';
+  const userCity = user?.city ?? '';
+  const userState = user?.state ?? '';
+
+  const scopeCounts = useMemo(
+    () => countByLocationScope(items, (item) => item, userArea, userCity, userState),
+    [items, userArea, userCity, userState]
+  );
+
+  const filteredItems = useMemo(() => {
+    return items.filter((item) =>
+      matchesLocationScope(item, locationScope, userArea, userCity, userState)
+    );
+  }, [items, locationScope, userArea, userCity, userState]);
 
   return (
     <div className="min-h-screen bg-ivory">
@@ -49,35 +69,55 @@ export default function RegistryView({ eyebrow, title, subtitle, unit, items }: 
             </p>
             <h1 className="font-heading text-lg font-bold text-heading sm:text-xl">{title}</h1>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-primary/20 bg-primary-50 px-3.5 py-1.5 text-sm font-medium text-primary">
-            <span className="font-heading text-base font-bold leading-none">{items.length}</span>
-            {unit}
+          <span
+            className="inline-flex min-h-[40px] shrink-0 items-center px-4 text-sm opacity-0 pointer-events-none"
+            aria-hidden
+          >
+            Back to Feed
           </span>
         </div>
       </header>
 
       {/* Grid */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <p className="mb-6 max-w-2xl text-sm leading-relaxed text-body">{subtitle}</p>
+        <p className="mb-4 max-w-2xl text-sm leading-relaxed text-body">{subtitle}</p>
 
-        <motion.ul
-          initial="hidden"
-          animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {items.map((item) => (
-            <motion.li
-              key={item.id}
-              variants={{
-                hidden: { opacity: 0, y: 24 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
-              }}
-            >
-              <RegistryCard item={item} onView={() => setSelected(item)} />
-            </motion.li>
-          ))}
-        </motion.ul>
+        <LocationScopeTabs
+          scope={locationScope}
+          onChange={setLocationScope}
+          counts={scopeCounts}
+          className="mb-6"
+        />
+
+        {filteredItems.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-card-border bg-white/60 p-10 text-center">
+            <p className="text-sm font-medium text-heading">
+              No {unit.toLowerCase()} in{' '}
+              {LOCATION_TABS.find((t) => t.id === locationScope)?.label ?? 'this area'} yet
+            </p>
+            <p className="mt-1 text-xs text-body">Try another scope or check back soon, InshaAllah.</p>
+          </div>
+        ) : (
+          <motion.ul
+            key={locationScope}
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredItems.map((item) => (
+              <motion.li
+                key={item.id}
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
+                }}
+              >
+                <RegistryCard item={item} onView={() => setSelected(item)} />
+              </motion.li>
+            ))}
+          </motion.ul>
+        )}
       </main>
 
       <DetailModal item={selected} onClose={() => setSelected(null)} />

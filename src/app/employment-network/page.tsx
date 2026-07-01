@@ -24,7 +24,15 @@ import EmptyState from '@/components/ui/EmptyState';
 import { JobCardSkeleton } from '@/components/ui/Skeleton';
 import PageTransition from '@/components/PageTransition';
 import BackToFeed from '@/components/BackToFeed';
+import LocationScopeTabs from '@/components/feed/LocationScopeTabs';
 import { useToast } from '@/context/ToastContext';
+import { useAuth } from '@/context/AuthContext';
+import {
+  matchesLocationScope,
+  countByLocationScope,
+  parseJobLocation,
+  type LocationScope,
+} from '@/lib/location-scope';
 
 const TYPE_OPTIONS: JobTag[] = ['Full-time', 'Part-time', 'Remote', 'On-site'];
 const TAG_OPTIONS: JobTag[] = ['Urgent', 'Religious', 'Remote'];
@@ -47,16 +55,22 @@ const TAG_VARIANTS: Record<JobTag, 'red' | 'emerald' | 'blue' | 'neutral'> = {
 };
 
 export default function EmploymentNetworkPage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<JobFilters>(EMPTY_FILTERS);
+  const [locationScope, setLocationScope] = useState<LocationScope>('nearby');
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(t);
   }, []);
 
-  const filtered = useMemo(() => {
+  const userArea = user?.area ?? '';
+  const userCity = user?.city ?? '';
+  const userState = user?.state ?? '';
+
+  const jobsBeforeScope = useMemo(() => {
     const q = query.trim().toLowerCase();
     return JOBS.filter((job) => {
       if (q) {
@@ -73,6 +87,25 @@ export default function EmploymentNetworkPage() {
       return true;
     });
   }, [query, filters]);
+
+  const scopeCounts = useMemo(
+    () =>
+      countByLocationScope(
+        jobsBeforeScope,
+        (job) => parseJobLocation(job.location),
+        userArea,
+        userCity,
+        userState
+      ),
+    [jobsBeforeScope, userArea, userCity, userState]
+  );
+
+  const filtered = useMemo(() => {
+    return jobsBeforeScope.filter((job) => {
+      const loc = parseJobLocation(job.location);
+      return matchesLocationScope(loc, locationScope, userArea, userCity, userState);
+    });
+  }, [jobsBeforeScope, locationScope, userArea, userCity, userState]);
 
   const activeFilterCount =
     (filters.type ? 1 : 0) + (filters.location ? 1 : 0) + filters.tags.length;
@@ -151,8 +184,15 @@ export default function EmploymentNetworkPage() {
             subtitle={`${JOBS.length} active openings across religious institutions, tech, education, and more.`}
           />
 
+          <LocationScopeTabs
+            scope={locationScope}
+            onChange={setLocationScope}
+            counts={scopeCounts}
+            className="mt-8"
+          />
+
           {/* Search bar */}
-          <div className="mt-10">
+          <div className="mt-6">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-body/50" />
               <input
